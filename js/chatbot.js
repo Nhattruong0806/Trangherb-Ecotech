@@ -45,13 +45,55 @@
 
     const formatResponse = (audience, coreText) => {
         if (!coreText) return "";
+        const cleaned = coreText.trim();
+        const lowered = cleaned.toLowerCase();
+        if (lowered.startsWith("dạ") || lowered.startsWith("kính thưa")) {
+            return cleaned;
+        }
         if (audience === "farmer") {
-            return `Dạ bác ơi, ${coreText}`;
+            return `Dạ bác ơi, ${cleaned}`;
         }
         if (audience === "business") {
-            return `Kính thưa Anh/Chị, ${coreText}`;
+            return `Kính thưa Anh/Chị, ${cleaned}`;
         }
-        return `Dạ, ${coreText}`;
+        return `Dạ, ${cleaned}`;
+    };
+
+    const sanitizeServerText = (rawText) => {
+        if (!rawText) return "";
+
+        let text = rawText
+            .replace(/\s+/g, " ")
+            .replace(/([A-Za-zÀ-ỹ])(\d+\.)/g, "$1 $2")
+            .trim();
+
+        // Remove common document headings accidentally returned from DOCX chunks.
+        text = text
+            .replace(/\bCHƯƠNG\s*\d+[^.?!]*[.?!]?/gi, "")
+            .replace(/\b\d+(?:\.\d+)*\s*Lý do chọn đề tài[.?!]?/gi, "")
+            .replace(/\b\d+(?:\.\d+)*\s*[A-ZÀ-Ỹ][^.?!]{0,80}[.?!]?/g, (m) => {
+                const t = m.trim();
+                return /^\d+(?:\.\d+)*\s+[A-ZÀ-Ỹ\s\-–]+[.?!]?$/.test(t) ? "" : t;
+            })
+            .replace(/\s{2,}/g, " ")
+            .trim();
+
+        const parts = text
+            .split(/(?<=[.!?…])\s+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+        const deduped = [];
+        const seen = new Set();
+        for (const part of parts) {
+            const key = part.toLowerCase();
+            if (!seen.has(key)) {
+                deduped.push(part);
+                seen.add(key);
+            }
+        }
+
+        return deduped.join(" ").trim();
     };
 
     const botReply = (userText) => {
@@ -125,7 +167,7 @@
         setTimeout(async () => {
             try {
                 const audience = detectAudience(text);
-                const reply = await askServer(text);
+                const reply = sanitizeServerText(await askServer(text));
                 typing.remove();
                 addMessage(formatResponse(audience, reply), "bot");
             } catch (err) {

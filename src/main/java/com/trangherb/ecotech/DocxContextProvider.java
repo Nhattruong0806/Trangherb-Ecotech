@@ -1,4 +1,4 @@
-﻿package com.trangherb.ecotech;
+package com.trangherb.ecotech;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +8,12 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -21,11 +25,16 @@ public class DocxContextProvider {
     private static final int FALLBACK_PARAGRAPHS = 2;
     private static final int MAX_CONTEXT_CHARS = 2000;
     private static final int MAX_ANSWER_CHARS = 600;
+    private static final Pattern PACKAGE_HEADING_PATTERN = Pattern.compile("^(\\d+)\\s+goi\\s+.+");
+    private static final Pattern TABLE_ROW_PATTERN = Pattern.compile("^\\s*(Gói|Goi)\\s*(\\d+)\\s*:", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern DIGIT_PATTERN = Pattern.compile(".*\\d.*");
 
     private final List<String> paragraphs;
+    private final List<PackageInfo> packages;
 
     public DocxContextProvider(String docxPaths) {
         this.paragraphs = loadParagraphs(docxPaths);
+        this.packages = parsePackages(this.paragraphs);
     }
 
     public String getContextForQuery(String query) {
@@ -62,7 +71,42 @@ public class DocxContextProvider {
         return trimContext(builder.toString().trim());
     }
 
+    public String getDirectAnswerForQuery(String query) {
+        if (query == null || query.isBlank() || packages.isEmpty()) {
+            return "";
+        }
+
+        String normalizedQuery = normalize(query);
+        Integer packageId = extractPackageId(normalizedQuery);
+        boolean priceIntent = isPriceIntent(normalizedQuery);
+        boolean listIntent = isListIntent(normalizedQuery);
+
+        if (listIntent && packageId == null && !priceIntent) {
+            return formatPackageList();
+        }
+
+        if (priceIntent) {
+            if (packageId != null) {
+                return formatPackagePrice(packageId);
+            }
+            if (listIntent || normalizedQuery.contains("goi")) {
+                return formatAllPrices();
+            }
+        }
+
+        if (packageId != null) {
+            return formatPackageDetail(packageId);
+        }
+
+        return "";
+    }
+
     public String getAnswerForQuery(String query) {
+        String direct = getDirectAnswerForQuery(query);
+        if (direct != null && !direct.isBlank()) {
+            return direct;
+        }
+
         if (paragraphs.isEmpty()) {
             return "";
         }
@@ -248,43 +292,7 @@ public class DocxContextProvider {
     }
 
     private String extractProducts(List<String> paragraphs) {
-        String[] keys = new String[] {
-                "san pham duoc lieu",
-                "mo hinh nuoi",
-                "thiet bi ho tro",
-                "giai phap xu ly nuoc thai",
-                "tra hoa trang",
-                "nen thom",
-                "phan huu co",
-                "chau sinh hoc"
-        };
-
-        List<String> items = new ArrayList<>();
-        for (String paragraph : paragraphs) {
-            String normalized = normalize(paragraph);
-            for (String key : keys) {
-                if (normalized.contains(key)) {
-                    String sentence = firstSentences(paragraph, 1);
-                    if (!sentence.isBlank()) {
-                        items.add(sentence);
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (items.isEmpty()) {
-            return firstSentences(paragraphs.get(0), 2);
-        }
-
-        StringBuilder builder = new StringBuilder("Các sản phẩm/dịch vụ nổi bật gồm: ");
-        for (int i = 0; i < items.size(); i++) {
-            if (i > 0) {
-                builder.append("; ");
-            }
-            builder.append(items.get(i));
-        }
-        return builder.toString().trim();
+        return formatPackageList();
     }
 
     private String extractByKeywords(List<String> paragraphs, List<String> keywords) {
@@ -357,5 +365,296 @@ public class DocxContextProvider {
         return cleaned.replace("TrangHerb EcoTech – Hành Trình Xanh Cộng Hưởng Với Sức Khỏe Cộng Đồng & Nông Nghiệp Tuần Hoàn", "TrangHerb EcoTech");
     }
 
+    private boolean isListIntent(String normalizedQuery) {
+        return normalizedQuery.contains("san pham")
+                || normalizedQuery.contains("dich vu")
+                || normalizedQuery.contains("goi dich vu")
+                || normalizedQuery.contains("co goi")
+                || normalizedQuery.contains("co san pham")
+                || normalizedQuery.contains("cac goi");
+    }
+
+    private boolean isPriceIntent(String normalizedQuery) {
+        return normalizedQuery.contains("bao nhieu")
+                || normalizedQuery.contains("gia ca")
+                || normalizedQuery.contains("muc gia")
+                || normalizedQuery.contains("chi phi")
+                || normalizedQuery.contains("gia")
+                || (normalizedQuery.contains("phi") && normalizedQuery.contains("goi"));
+    }
+
+    private Integer extractPackageId(String normalizedQuery) {
+        Matcher matcher = Pattern.compile("goi\\s*(?:so|thu)?\\s*(\\d+)").matcher(normalizedQuery);
+        if (matcher.find()) {
+            int value = safeParseInt(matcher.group(1));
+            return value > 0 ? value : null;
+        }
+        if (normalizedQuery.contains("goi mot") || normalizedQuery.contains("goi so mot") || normalizedQuery.contains("goi thu mot")) {
+            return 1;
+        }
+        if (normalizedQuery.contains("goi hai") || normalizedQuery.contains("goi so hai") || normalizedQuery.contains("goi thu hai")) {
+            return 2;
+        }
+        if (normalizedQuery.contains("goi ba") || normalizedQuery.contains("goi so ba") || normalizedQuery.contains("goi thu ba")) {
+            return 3;
+        }
+        return null;
+    }
+
+    private String formatPackageList() {
+        if (packages.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder("Dạ bên mình có các gói dịch vụ sau:");
+        for (PackageInfo info : packages) {
+            String line = "Gói " + info.id() + " - " + info.name();
+            String price = formatPrice(info.price());
+            if (!price.isBlank()) {
+                line = line + " (" + price + ")";
+            }
+            builder.append("\n- ").append(line);
+        }
+        return builder.toString().trim();
+    }
+
+    private String formatAllPrices() {
+        if (packages.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder("Dạ, mức giá các gói hiện có:");
+        for (PackageInfo info : packages) {
+            String price = formatPrice(info.price());
+            if (price.isBlank()) {
+                price = "chưa có thông tin giá";
+            }
+            builder.append("\n- Gói ")
+                    .append(info.id())
+                    .append(" - ")
+                    .append(info.name())
+                    .append(": ")
+                    .append(price);
+        }
+        return builder.toString().trim();
+    }
+
+    private String formatPackagePrice(int packageId) {
+        PackageInfo info = findPackage(packageId);
+        if (info == null) {
+            return "Dạ, hiện tài liệu chưa có thông tin giá cho gói " + packageId + ".";
+        }
+        String price = formatPrice(info.price());
+        if (price.isBlank()) {
+            return "Dạ, hiện tài liệu chưa có thông tin giá cụ thể cho Gói " + packageId + ".";
+        }
+        return "Dạ, Gói " + packageId + " - " + info.name() + " có mức giá " + price + ".";
+    }
+
+    private String formatPackageDetail(int packageId) {
+        PackageInfo info = findPackage(packageId);
+        if (info == null) {
+            return "Dạ, hiện tài liệu chưa có thông tin về Gói " + packageId + ".";
+        }
+        StringBuilder builder = new StringBuilder("Dạ, Gói " + packageId + " - " + info.name() + " gồm:");
+        List<String> lines = splitDescriptionLines(info.description());
+        if (lines.isEmpty()) {
+            builder.append("\n- Hiện tài liệu chưa mô tả chi tiết cho gói này.");
+        } else {
+            int limit = Math.min(4, lines.size());
+            for (int i = 0; i < limit; i++) {
+                builder.append("\n- ").append(lines.get(i));
+            }
+        }
+        String price = formatPrice(info.price());
+        if (!price.isBlank()) {
+            builder.append("\nMức giá: ").append(price).append(".");
+        }
+        return builder.toString().trim();
+    }
+
+    private List<String> splitDescriptionLines(String description) {
+        if (description == null || description.isBlank()) {
+            return List.of();
+        }
+        String[] raw = description.split("\\n+");
+        List<String> lines = new ArrayList<>();
+        for (String item : raw) {
+            String trimmed = item.trim();
+            if (!trimmed.isEmpty()) {
+                lines.add(trimmed);
+            }
+        }
+        return lines;
+    }
+
+    private PackageInfo findPackage(int packageId) {
+        for (PackageInfo info : packages) {
+            if (info.id() == packageId) {
+                return info;
+            }
+        }
+        return null;
+    }
+
+    private String formatPrice(String price) {
+        if (price == null) {
+            return "";
+        }
+        String trimmed = normalizeWhitespace(price);
+        if (trimmed.isBlank()) {
+            return "";
+        }
+        String lowered = trimmed.toLowerCase(Locale.ROOT);
+        if (lowered.contains("vnđ") || lowered.contains("vnd")) {
+            return trimmed;
+        }
+        if (!DIGIT_PATTERN.matcher(trimmed).matches()) {
+            return trimmed;
+        }
+        if (trimmed.matches("^[0-9.]+$")) {
+            return trimmed + " VNĐ";
+        }
+        if (trimmed.matches("^[0-9.]+\\s*\\(.*\\)$")) {
+            return trimmed.replaceFirst("^([0-9.]+)\\s*\\(", "$1 VNĐ (");
+        }
+        return trimmed;
+    }
+
+    private List<PackageInfo> parsePackages(List<String> paragraphs) {
+        if (paragraphs.isEmpty()) {
+            return List.of();
+        }
+
+        List<PackageHeading> headings = new ArrayList<>();
+        Map<Integer, String> rowNames = new HashMap<>();
+        Map<Integer, String> priceMap = new HashMap<>();
+
+        for (int i = 0; i < paragraphs.size(); i++) {
+            String paragraph = paragraphs.get(i);
+            String normalized = normalize(paragraph);
+
+            Matcher headingMatcher = PACKAGE_HEADING_PATTERN.matcher(normalized);
+            if (headingMatcher.find()) {
+                int id = safeParseInt(headingMatcher.group(1));
+                if (id > 0) {
+                    String name = stripLeadingPackageLabel(paragraph);
+                    headings.add(new PackageHeading(id, i, name));
+                }
+            }
+
+            Matcher rowMatcher = TABLE_ROW_PATTERN.matcher(paragraph);
+            if (rowMatcher.find()) {
+                int id = safeParseInt(rowMatcher.group(2));
+                if (id > 0) {
+                    String rowName = stripTableRowLabel(paragraph);
+                    if (!rowName.isBlank()) {
+                        rowNames.putIfAbsent(id, rowName);
+                    }
+                    String price = findNextPrice(paragraphs, i + 1);
+                    if (!price.isBlank()) {
+                        priceMap.putIfAbsent(id, price);
+                    }
+                }
+            }
+        }
+
+        Map<Integer, String> descMap = new HashMap<>();
+        for (int i = 0; i < headings.size(); i++) {
+            PackageHeading heading = headings.get(i);
+            int start = heading.index() + 1;
+            int end = (i + 1 < headings.size()) ? headings.get(i + 1).index() : paragraphs.size();
+            List<String> parts = new ArrayList<>();
+            for (int j = start; j < end; j++) {
+                String paragraph = paragraphs.get(j);
+                if (isTableHeader(paragraph) || isTableRow(paragraph)) {
+                    break;
+                }
+                if (!paragraph.isBlank()) {
+                    parts.add(paragraph);
+                }
+            }
+            if (!parts.isEmpty()) {
+                descMap.put(heading.id(), String.join("\n", parts));
+            }
+        }
+
+        Map<Integer, String> nameMap = new HashMap<>();
+        for (PackageHeading heading : headings) {
+            if (heading.name() != null && !heading.name().isBlank()) {
+                nameMap.put(heading.id(), heading.name());
+            }
+        }
+        for (Map.Entry<Integer, String> entry : rowNames.entrySet()) {
+            nameMap.putIfAbsent(entry.getKey(), entry.getValue());
+        }
+
+        Set<Integer> ids = new HashSet<>();
+        ids.addAll(nameMap.keySet());
+        ids.addAll(descMap.keySet());
+        ids.addAll(priceMap.keySet());
+
+        List<PackageInfo> result = new ArrayList<>();
+        for (Integer id : ids) {
+            String name = nameMap.getOrDefault(id, "Gói " + id);
+            String description = descMap.getOrDefault(id, "");
+            String price = priceMap.getOrDefault(id, "");
+            result.add(new PackageInfo(id, name, description, price));
+        }
+        result.sort(Comparator.comparingInt(PackageInfo::id));
+        return result;
+    }
+
+    private boolean isTableHeader(String paragraph) {
+        String normalized = normalize(paragraph);
+        return normalized.startsWith("ten goi dich vu")
+                || normalized.startsWith("hoat dong chinh")
+                || normalized.startsWith("muc gia");
+    }
+
+    private boolean isTableRow(String paragraph) {
+        return paragraph != null && TABLE_ROW_PATTERN.matcher(paragraph).find();
+    }
+
+    private String findNextPrice(List<String> paragraphs, int startIndex) {
+        int limit = Math.min(paragraphs.size(), startIndex + 3);
+        for (int i = startIndex; i < limit; i++) {
+            String paragraph = paragraphs.get(i);
+            if (isTableHeader(paragraph) || isTableRow(paragraph)) {
+                break;
+            }
+            if (isPriceValue(paragraph)) {
+                return paragraph.trim();
+            }
+        }
+        return "";
+    }
+
+    private boolean isPriceValue(String paragraph) {
+        if (paragraph == null || paragraph.isBlank()) {
+            return false;
+        }
+        return DIGIT_PATTERN.matcher(paragraph).matches();
+    }
+
+    private String stripLeadingPackageLabel(String paragraph) {
+        return paragraph.replaceFirst("^\\s*\\d+\\.?\\s*(Gói|Goi)\\s+", "").trim();
+    }
+
+    private String stripTableRowLabel(String paragraph) {
+        return paragraph.replaceFirst("^\\s*(Gói|Goi)\\s*\\d+\\s*:\\s*", "").trim();
+    }
+
+    private int safeParseInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception ex) {
+            return -1;
+        }
+    }
+
     private record ScoredParagraph(String paragraph, int score) {}
+
+    private record PackageHeading(int id, int index, String name) {}
+
+    private record PackageInfo(int id, String name, String description, String price) {}
 }
+

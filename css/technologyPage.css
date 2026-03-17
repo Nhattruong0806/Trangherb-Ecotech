@@ -34,7 +34,7 @@ body {
 /* Technology Section */
 .technology {
     /*background: linear-gradient(135deg, #2d5016 0%, #1a4c96 100%);*/
-    background: linear-gradient(180deg, #e8f5e9 0%, #ffffff 100%);
+    background: linear-gradient(180deg, #eef7f1 0%, #fafdfa 62%, #ffffff 100%);
     color: white;
     padding-top: calc(var(--header-height) + 20px); /* thêm khoảng cách 20px */
     padding-bottom: 80px;

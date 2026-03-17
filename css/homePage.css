@@ -4,6 +4,15 @@
     box-sizing: border-box;
 }
 
+:root {
+    --brand-blue-deep: #0E2A5B;
+    --brand-blue: #1a4c96;
+    --brand-green: #36622E;
+    --bg-soft-1: #fbfdfc;
+    --bg-soft-2: #f3f9f5;
+    --bg-soft-3: #ebf5ef;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
@@ -15,7 +24,7 @@ body {
 /* Hero Section với animation gradient */
 
 .hero {
-    background: linear-gradient(135deg, #0E2A5B 0%, #1a4c96 40%, #36622E 100%);
+    background: linear-gradient(135deg, #12366f 0%, #2a5ea4 48%, #3f7446 100%);
     background-size: 200% 200%;
     animation: gradientShift 15s ease infinite;
     color: white;
@@ -40,7 +49,7 @@ body {
     background-image: radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent), radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.3), transparent), radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.2), transparent), radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.2), transparent);
     background-size: 200% 200%;
     animation: particles 20s linear infinite;
-    opacity: 0.6;
+    opacity: 0.35;
 }
 
 @keyframes gradientShift {
@@ -203,7 +212,7 @@ body {
 /* Ecosystem Section */
 
 .ecosystem {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 50%, #f0f8f0 100%);
+    background: linear-gradient(145deg, #fcfefd 0%, var(--bg-soft-1) 44%, var(--bg-soft-2) 100%);
     position: relative;
     padding: 80px 0;
 }
@@ -339,7 +348,7 @@ body {
 /* Impact Section */
 
 .impact {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #f9fcfa 100%);
 }
 
 .stat-card {
@@ -347,7 +356,7 @@ body {
     padding: 2.5rem;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 32px rgba(17, 44, 82, 0.08);
     border-left: 5px solid #36622E;
     transition: all 0.4s ease;
     position: relative;
@@ -396,7 +405,7 @@ body {
 /* Products Section */
 
 .products {
-    background: linear-gradient(180deg, #e8f5e9 0%, #ffffff 100%);
+    background: linear-gradient(180deg, var(--bg-soft-3) 0%, var(--bg-soft-2) 60%, #ffffff 100%);
 }
 
 .product-card {
@@ -484,7 +493,7 @@ body {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, #0E2A5B 0%, #1a4c96 50%, #36622E 100%);
+    background: linear-gradient(135deg, #143a73 0%, #2f66ab 58%, #3f7446 100%);
     color: white;
     position: relative;
     overflow: hidden;
@@ -585,7 +594,7 @@ body {
 /* Footer */
 
 .footer {
-    background: linear-gradient(135deg, #0E2A5B 0%, #1a4c96 100%);
+    background: linear-gradient(135deg, #143766 0%, #245388 100%);
     color: white;
     padding: 4rem 0 2rem;
 }

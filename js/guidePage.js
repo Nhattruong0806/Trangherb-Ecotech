@@ -11,8 +11,10 @@ const maxLocation = numOfPapers + 1;
 console.log(`Detected ${numOfPapers} papers`);
 
 // Event Listeners
-prevBtn.addEventListener("click", goPrevPage);
-nextBtn.addEventListener("click", goNextPage);
+if (prevBtn && nextBtn && book && papers.length > 0) {
+    prevBtn.addEventListener("click", goPrevPage);
+    nextBtn.addEventListener("click", goNextPage);
+}
 
 // Business Logic
 let currentLocation = 1;
@@ -83,7 +85,9 @@ function goPrevPage() {
 
 // Khởi tạo z-index khi trang được load
 document.addEventListener('DOMContentLoaded', function() {
-    initializeZIndex();
+    if (papers.length > 0) {
+        initializeZIndex();
+    }
 });
 
 /* -------------------------------
@@ -99,20 +103,31 @@ document.addEventListener('DOMContentLoaded', function() {
         const iframe = container.querySelector('.flipbook-premium-iframe');
         if (!iframe) return;
 
-        // Create loader
-        const loader = document.createElement('div');
-        loader.className = 'flipbook-loading';
-        container.appendChild(loader);
+        // Reuse existing loader in HTML if available to avoid duplicates
+        const loader = container.querySelector('.flipbook-loading') || document.createElement('div');
+        if (!loader.classList.contains('flipbook-loading')) {
+            loader.className = 'flipbook-loading';
+        }
+        if (!loader.parentNode) {
+            container.appendChild(loader);
+        }
 
-        // Create controls
-        const controls = document.createElement('div');
-        controls.className = 'flipbook-premium-controls';
-        controls.innerHTML = `
-            <button type="button" class="fb-open" title="Mở trong tab mới"><i class="bi bi-box-arrow-up-right"></i></button>
-            <button type="button" class="fb-full" title="Toàn màn hình"><i class="bi bi-arrows-fullscreen"></i></button>
-            <button type="button" class="fb-reload" title="Tải lại"><i class="bi bi-arrow-clockwise"></i></button>
-        `;
-        container.appendChild(controls);
+        // Reuse existing controls in HTML if available to avoid duplicates
+        const controls = container.querySelector('.flipbook-premium-controls') || document.createElement('div');
+        if (!controls.classList.contains('flipbook-premium-controls')) {
+            controls.className = 'flipbook-premium-controls';
+        }
+        if (!controls.parentNode) {
+            container.appendChild(controls);
+        }
+
+        if (!controls.querySelector('.fb-open')) {
+            controls.innerHTML = `
+                <button type="button" class="fb-open" title="Mở trong tab mới"><i class="bi bi-box-arrow-up-right"></i></button>
+                <button type="button" class="fb-full" title="Toàn màn hình"><i class="bi bi-arrows-fullscreen"></i></button>
+                <button type="button" class="fb-reload" title="Tải lại"><i class="bi bi-arrow-clockwise"></i></button>
+            `;
+        }
 
         const btnOpen = controls.querySelector('.fb-open');
         const btnFull = controls.querySelector('.fb-full');

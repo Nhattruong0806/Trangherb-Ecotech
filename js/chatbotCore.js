@@ -27,7 +27,7 @@ window.chatbotCore = [
     {
         id: "core-6",
         source: "website",
-        text: "Các sản phẩm đặc trưng gồm: Trà Hoa Trang chức năng, nến tinh dầu, xà phòng thảo dược, phân bón sinh học, vật liệu composite, tinh dầu thảo mộc."
+        text: "Các gói dịch vụ nổi bật gồm: Gói 1 Tư vấn & Thiết kế Hệ sinh thái Tuần hoàn (1.500.000 VNĐ), Gói 2 Triển khai & Chuyển giao Công nghệ Nông nghiệp Số (3.500.000 VNĐ), Gói 3 Nền tảng Số App Thần Hộ Mệnh (0 VNĐ hỗ trợ cộng đồng)."
     },
     {
         id: "core-7",
