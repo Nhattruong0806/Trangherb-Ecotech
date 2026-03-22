@@ -2,23 +2,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== SVG Ecosystem Diagram =====
     const svg = document.getElementById('hex-cycle-svg');
     if (!svg) {
-        console.error('SVG element not found');
         return;
     }
     const nodesGroup = svg.getElementById('nodes');
     const flowsGroup = svg.getElementById('flows');
     if (!nodesGroup || !flowsGroup) {
-        console.error('Groups not found');
         return;
     }
 
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const xlinkNS = 'http://www.w3.org/1999/xlink';
     const cx = 350;
     const cy = 350;
     const arrowRadius = 170;
     const nodeCenterRadius = 220;
     const hexOuter = 50;
-    const nodeIcons = ['🐝', '🌺', '🪱', '🐟', '🐍', '🥬'];
-    const nodeLabels = ['Ong', 'Hoa Trang', 'Trùn Quế', 'Cá Trê', 'Rắn Ri Voi', 'Rau'];
+    const nodeImages = [
+        'images/tuan_hoan/Ong.jpg',
+        'images/tuan_hoan/HoaTrang.jpg',
+        'images/tuan_hoan/TrunQue.jpg',
+        'images/tuan_hoan/CaTre.jpg',
+        'images/tuan_hoan/RanRiVoi.webp',
+        'images/tuan_hoan/RauCai.jpg'
+    ];
+    const nodeLabels = ['Ong', 'Hoa Trang', 'Trùn Quế', 'Cá Trê', 'Rắn Ri Voi', 'Rau Cải'];
     const nodeInfo = [
         "Tăng năng suất nhờ thụ phấn tự nhiên",
         "Nguồn dược liệu bản địa, mật hoa nuôi ong",
@@ -50,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Create tooltip using foreignObject
-    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    const fo = document.createElementNS(svgNS, 'foreignObject');
     fo.setAttribute('id', 'tooltip-fo');
     fo.setAttribute('x', cx - 80);
     fo.setAttribute('y', cy + 40);
@@ -62,31 +69,47 @@ document.addEventListener("DOMContentLoaded", () => {
     fo.appendChild(div);
     svg.appendChild(fo);
 
+    const defs = svg.querySelector('defs') || (() => {
+        const d = document.createElementNS(svgNS, 'defs');
+        svg.insertBefore(d, svg.firstChild);
+        return d;
+    })();
+
     // Draw nodes
     nodeCenters.forEach((n, idx) => {
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const g = document.createElementNS(svgNS, 'g');
         g.setAttribute('class', 'hex-group');
 
-        // Polygon
-        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        // Clip path for hex image
+        const clip = document.createElementNS(svgNS, 'clipPath');
+        clip.setAttribute('id', `hex-clip-${idx}`);
+        const clipPoly = document.createElementNS(svgNS, 'polygon');
+        clipPoly.setAttribute('points', hexPoints(n.cx, n.cy, hexOuter));
+        clip.appendChild(clipPoly);
+        defs.appendChild(clip);
+
+        // Image fill
+        const img = document.createElementNS(svgNS, 'image');
+        img.setAttribute('x', (n.cx - hexOuter).toString());
+        img.setAttribute('y', (n.cy - hexOuter).toString());
+        img.setAttribute('width', (hexOuter * 2).toString());
+        img.setAttribute('height', (hexOuter * 2).toString());
+        img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+        img.setAttribute('clip-path', `url(#hex-clip-${idx})`);
+        img.setAttributeNS(xlinkNS, 'href', nodeImages[idx]);
+        img.setAttribute('href', nodeImages[idx]);
+        g.appendChild(img);
+
+        // Polygon border
+        const poly = document.createElementNS(svgNS, 'polygon');
         poly.setAttribute('class', 'hex-polygon');
         poly.setAttribute('points', hexPoints(n.cx, n.cy, hexOuter));
         g.appendChild(poly);
 
-        // Icon (emoji)
-        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        icon.setAttribute('x', n.cx);
-        icon.setAttribute('y', n.cy - 6);
-        icon.setAttribute('text-anchor', 'middle');
-        icon.setAttribute('font-size', '28');
-        icon.setAttribute('class', 'hex-label');
-        icon.textContent = nodeIcons[idx];
-        g.appendChild(icon);
-
         // Label text
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        const label = document.createElementNS(svgNS, 'text');
         label.setAttribute('x', n.cx);
-        label.setAttribute('y', n.cy + 18);
+        label.setAttribute('y', n.cy + hexOuter + 20);
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('font-size', '13');
         label.setAttribute('fill', '#2d5016');
