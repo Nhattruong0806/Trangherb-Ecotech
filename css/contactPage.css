@@ -46,18 +46,18 @@ body {
 }
 
 /* ===== Contact Section ===== */
-.section {
+.contact-section {
     padding: 65px 20px;
 }
 
-.section h3 {
+.contact-section h3 {
     font-size: 1.7rem;
     font-weight: 600;
     color: #0E2A5B;
     margin-bottom: 20px;
 }
 
-.section p {
+.contact-section p {
     font-size: 1.05rem;
     line-height: 1.7;
     color: #333;
@@ -71,25 +71,25 @@ body {
 }
 
 /* ===== Social Media ===== */
-.section .d-flex a {
+.contact-section .d-flex a {
     transition: all 0.3s ease;
 }
 
-.section .d-flex a:hover {
+.contact-section .d-flex a:hover {
     color: #0E2A5B !important;   /* khi hover sẽ xanh lá thương hiệu */
     transform: scale(1.2);
 }
 
 
 /* Cột căn giữa theo chiều ngang */
-.section .row.g-5 > div {
+.contact-section .row.g-5 > div {
     display: flex;
     flex-direction: column;
     align-items: center; /* căn giữa cột theo ngang */
 }
 
 /* Text trong các <p> căn đều */
-.section .row.g-5 > div p {
+.contact-section .row.g-5 > div p {
     text-align: justify;  /* căn đều 2 bên */
     width: 100%;           /* text chiếm hết chiều rộng cột */
     margin: 0.5rem 0;
