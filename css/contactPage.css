@@ -28,7 +28,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #15407a 0%, #2f69ad 55%, #4a7f52 100%);
+    background: linear-gradient(135deg, var(--brand-dark-deep) 0%, #152238 55%, #062419 100%);
     color: white;
     padding: 120px 20px 0px;
     text-align: center;
@@ -53,7 +53,7 @@ body {
 .contact-section h3 {
     font-size: 1.7rem;
     font-weight: 600;
-    color: #0E2A5B;
+    color: var(--brand-dark-deep);
     margin-bottom: 20px;
 }
 
@@ -67,19 +67,18 @@ body {
 .map-container {
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(11, 19, 43, 0.08);
 }
 
 /* ===== Social Media ===== */
 .contact-section .d-flex a {
-    transition: all 0.3s ease;
+    transition: var(--transition-luxury);
 }
 
 .contact-section .d-flex a:hover {
-    color: #0E2A5B !important;   /* khi hover sẽ xanh lá thương hiệu */
+    color: var(--brand-green-rich) !important;
     transform: scale(1.2);
 }
-
 
 /* Cột căn giữa theo chiều ngang */
 .contact-section .row.g-5 > div {
@@ -93,4 +92,69 @@ body {
     text-align: justify;  /* căn đều 2 bên */
     width: 100%;           /* text chiếm hết chiều rộng cột */
     margin: 0.5rem 0;
+}
+
+/* Custom premium form styles */
+.contact-advice {
+    background: var(--bg-light-sage) !important;
+    border-top: 1px solid rgba(4, 120, 87, 0.08);
+}
+
+.contact-form {
+    border-radius: 24px !important;
+    border: 1px solid rgba(4, 120, 87, 0.12) !important;
+    box-shadow: 0 15px 35px rgba(11, 19, 43, 0.05) !important;
+    padding: 3rem !important;
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+}
+
+.form-control.form-input {
+    border-radius: 8px !important;
+    border: 1.5px solid rgba(4, 120, 87, 0.15) !important;
+    padding: 0.85rem 1rem !important;
+    transition: var(--transition-luxury) !important;
+    background-color: var(--bg-light-soft) !important;
+    font-size: 1rem !important;
+    color: var(--text-dark) !important;
+}
+
+.form-control.form-input:focus {
+    border-color: var(--brand-green-rich) !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1) !important;
+    outline: none !important;
+}
+
+.form-group.position-relative label {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    padding: 0 5px;
+    color: var(--text-muted);
+    transition: var(--transition-luxury);
+    pointer-events: none;
+}
+
+/* Float label label behavior when input is focused or not empty */
+.form-control.form-input:focus ~ label,
+.form-control.form-input:not(:placeholder-shown) ~ label {
+    top: 0;
+    transform: translateY(-50%) scale(0.85);
+    background: #ffffff;
+    color: var(--brand-green-deep);
+    font-weight: 700;
+}
+
+/* Adjust textarea label positioning */
+textarea.form-control.form-input ~ label {
+    top: 25px;
+}
+textarea.form-control.form-input:focus ~ label,
+textarea.form-control.form-input:not(:placeholder-shown) ~ label {
+    top: 0;
 }

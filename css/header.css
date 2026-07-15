@@ -24,49 +24,35 @@
 
 /* Navbar (ở giữa) */
 .navbar-nav .nav-link {
-    color: #0E2A5B !important;
+    color: var(--brand-dark-deep) !important;
     font-weight: 600;
-    padding: 0.75rem 1.25rem;
-    font-size: 1.1rem;
+    padding: 0.5rem 1.25rem !important;
+    margin: 0 0.2rem;
+    font-size: 1.05rem;
     position: relative;
-    transition: color 0.3s ease, transform 0.3s ease;
+    border-radius: 30px;
+    border: 1px solid transparent;
+    transition: var(--transition-luxury);
+    display: inline-block;
 }
 
 .navbar-nav .nav-link:hover {
-    transform: translateY(-2px);
+    background: rgba(5, 150, 105, 0.06);
+    border-color: rgba(5, 150, 105, 0.12);
+    color: var(--brand-green-deep) !important;
+    transform: translateY(-1px);
 }
 
-.navbar-nav .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 3px;
-    background-color: #0E2A5B;
-    transition: width 0.3s ease, left 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover::after {
-    width: 100%;
-    left: 0;
-}
-
-/* Style cho trang hiện tại (active) */
+/* Style cho trang hiện tại (active) với hiệu ứng bóng glassmorphism */
 .navbar-nav .nav-link.active {
-    color: #0E2A5B !important;
-    font-weight: 700; /* Đậm hơn một chút */
-}
-
-.navbar-nav .nav-link.active::after {
-    width: 100%;
-    left: 0;
-    background-color: #0E2A5B;
-}
-
-/* Đảm bảo active state không bị ảnh hưởng bởi hover */
-.navbar-nav .nav-link.active:hover {
-    transform: none; /* Không có hiệu ứng di chuyển lên */
+    background: rgba(5, 150, 105, 0.1) !important;
+    border: 1px solid rgba(5, 150, 105, 0.2) !important;
+    color: var(--brand-green-deep) !important;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transform: none !important;
 }
 
 /* Nút đăng nhập */

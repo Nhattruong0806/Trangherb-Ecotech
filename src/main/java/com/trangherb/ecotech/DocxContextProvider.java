@@ -102,19 +102,30 @@ public class DocxContextProvider {
     }
 
     public String getAnswerForQuery(String query) {
+        String normalizedQuery = normalize(query == null ? "" : query);
+        
+        // Handle greetings gracefully
+        if (normalizedQuery.contains("chao") || 
+            normalizedQuery.contains("xin chao") || 
+            normalizedQuery.contains("hello") || 
+            normalizedQuery.contains("hi") || 
+            normalizedQuery.contains("helo") || 
+            normalizedQuery.contains("alo")) {
+            return "Dạ xin chào Anh/Chị! Em là trợ lý ảo TrangHerb EcoTech. Em có thể hỗ trợ cung cấp thông tin về các gói dịch vụ (Nuôi gà thông minh, Tưới rau tự động, Aquaponics) và tài liệu cẩm nang của dự án ạ. Anh/Chị cần tư vấn thông tin gì ạ?";
+        }
+
         String direct = getDirectAnswerForQuery(query);
         if (direct != null && !direct.isBlank()) {
             return direct;
         }
 
         if (paragraphs.isEmpty()) {
-            return "";
+            return "Dạ hiện tại tài liệu dự án chưa được tải lên hệ thống. Anh/Chị vui lòng hỏi lại sau hoặc liên hệ trực tiếp số hotline 0355107207 để được tư vấn trực tiếp nhé ạ.";
         }
 
-        String normalizedQuery = normalize(query == null ? "" : query);
         List<String> scored = topParagraphs(normalizedQuery);
         if (scored.isEmpty()) {
-            return "";
+            return "Dạ, hiện tại thông tin về câu hỏi này chưa được cập nhật đầy đủ trong tài liệu của TrangHerb EcoTech. Anh/Chị có thể hỏi về các gói dịch vụ (Module 1, Module 2, Module 3), báo giá, hoặc quy trình nuôi Aquaponics/tưới tiêu tự động để em hỗ trợ tốt nhất nhé ạ.";
         }
 
         String answer;
@@ -132,7 +143,11 @@ public class DocxContextProvider {
             answer = firstSentences(scored.get(0), 2);
         }
 
-        return trimAnswer(cleanHeading(answer));
+        String finalAnswer = trimAnswer(cleanHeading(answer));
+        if (finalAnswer.isBlank()) {
+            return "Dạ, thông tin chi tiết về câu hỏi này chưa có sẵn trong tài liệu. Anh/Chị vui lòng thử lại với câu hỏi khác về kỹ thuật, cẩm nang hoặc các gói dịch vụ TrangHerb nhé ạ.";
+        }
+        return finalAnswer;
     }
 
     private List<String> loadParagraphs(String docxPaths) {

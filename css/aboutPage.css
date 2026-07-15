@@ -1,8 +1,8 @@
 :root {
     --header-height: 140px;
-    --primary-color: #0E2A5B;
-    --secondary-color: #54B435;
-    --accent-color: #36622E;
+    --primary-color: var(--brand-dark-deep);
+    --secondary-color: var(--brand-green-rich);
+    --accent-color: var(--brand-green-deep);
 }
 
 * {
@@ -155,7 +155,7 @@ body {
 /* About Story Section */
 
 .about-story {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 100%);
+    background: linear-gradient(135deg, var(--bg-light-soft) 0%, var(--bg-light-sage) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -224,15 +224,15 @@ body {
     text-align: justify;
     color: #555;
     padding: 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    background: linear-gradient(135deg, var(--bg-light-soft) 0%, #ffffff 100%);
     border-radius: 12px;
     border-left: 4px solid var(--secondary-color);
-    transition: all 0.3s ease;
+    transition: var(--transition-luxury);
 }
 
 .mission-vision p:hover {
-    transform: translateX(10px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transform: translateX(6px);
+    box-shadow: 0 8px 25px rgba(4, 120, 87, 0.08);
 }
 
 

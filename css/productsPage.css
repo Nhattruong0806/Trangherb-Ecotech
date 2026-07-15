@@ -24,20 +24,21 @@ body {
 }
 
 .products {
-    padding-top: calc(var(--header-height) + 20px); /* thêm khoảng cách 20px */
+    padding-top: 80px;
     padding-bottom: 80px;
     padding-left: 2rem;
     padding-right: 2rem;
-    background: linear-gradient(180deg, #edf6f0 0%, #f9fcfa 62%, #ffffff 100%);
+    background: var(--bg-light-sage);
+    border-bottom: 1px solid rgba(4, 120, 87, 0.08);
 }
 
 /* Section Title */
 .section-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #0E2A5B;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--brand-dark-deep);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
 }
-
 
 /* Card sản phẩm */
 .product-card img {
@@ -53,7 +54,7 @@ body {
 .product-price {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #28a745;
+    color: var(--brand-green-rich);
 }
 .btn-add-cart {
     margin-top: .5rem;
@@ -64,89 +65,183 @@ body {
 .product-card {
     border-radius: 12px;
     overflow: hidden;
-    transition: transform .2s ease, box-shadow .2s ease;
+    transition: var(--transition-luxury);
 }
 .product-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 24px rgba(11, 19, 43, 0.06);
 }
 
 .services-intro {
     max-width: 820px;
     margin-left: auto;
     margin-right: auto;
-    color: #35533b;
-    font-size: 0.98rem;
-    line-height: 1.55;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 500;
 }
 
 .services-panel {
     max-width: 1160px;
     margin: 0 auto;
-    padding: 1.6rem 1.25rem;
-    border-radius: 22px;
-    border: 1px solid rgba(53, 92, 63, 0.15);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(247, 252, 248, 0.92) 100%),
-        radial-gradient(circle at 12% 18%, rgba(65, 142, 95, 0.11), transparent 35%),
-        radial-gradient(circle at 90% 84%, rgba(47, 116, 78, 0.1), transparent 30%);
-    box-shadow: 0 12px 28px rgba(39, 82, 54, 0.1);
+    padding: 2.5rem 1.8rem;
+    border-radius: 24px;
+    border: 1px solid rgba(4, 120, 87, 0.12);
+    background: #ffffff;
+    box-shadow: 0 15px 35px rgba(11, 19, 43, 0.04);
 }
 
+/* Service Card Styles */
 .service-card {
-    border-radius: 14px;
+    border-radius: 18px;
     background: #ffffff;
-    border: 1px solid rgba(54, 98, 46, 0.12);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid rgba(4, 120, 87, 0.12);
+    transition: var(--transition-luxury);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .service-card .card-body {
-    padding: 1rem 1rem 0.95rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .service-card .card-title {
-    font-size: 1.04rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--brand-dark-deep);
     line-height: 1.4;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 28px rgba(32, 71, 29, 0.14);
+    transform: translateY(-8px);
+    box-shadow: 0 16px 36px rgba(4, 120, 87, 0.12);
+    border-color: var(--brand-green-rich);
+}
+
+/* Highlighted (Module 3) Card */
+.service-card.highlighted {
+    border: 2px solid var(--brand-gold);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.06);
+    background: linear-gradient(180deg, #ffffff 0%, #fffdf8 100%);
+    position: relative;
+}
+
+.service-card.highlighted:hover {
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.18);
+    border-color: #b8860b;
 }
 
 .service-badge {
     display: inline-block;
-    background: #ecf6ef;
-    color: #1e4f2f;
-    font-weight: 700;
-    border-radius: 999px;
-    padding: 0.26rem 0.75rem;
-    font-size: 0.8rem;
-    margin-bottom: 0.62rem;
+    background: rgba(5, 150, 105, 0.08);
+    color: var(--brand-green-deep);
+    font-weight: 800;
+    border-radius: 50px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(4, 120, 87, 0.08);
+}
+
+.service-badge.highlighted-badge {
+    background: linear-gradient(135deg, var(--brand-gold) 0%, #b8860b 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 3px 8px rgba(212, 175, 55, 0.3);
 }
 
 .service-price {
-    font-size: 1.08rem;
-    font-weight: 700;
-    color: #2c7a3f;
-    margin: 0.35rem 0 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--brand-green-deep);
+    margin: 0.5rem 0 1.2rem;
+    letter-spacing: -0.5px;
 }
 
-.service-price-free {
-    color: #0f5da6;
+.service-card.highlighted .service-price {
+    color: #b8860b;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.02);
 }
 
 .service-features {
-    padding-left: 1rem;
-    margin: 0;
-    color: #23412d;
-    font-size: 0.94rem;
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 1.5rem;
+    flex-grow: 1;
 }
 
 .service-features li {
-    margin-bottom: 0.45rem;
-    line-height: 1.45;
+    position: relative;
+    padding-left: 1.8rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: #2b3a30;
+    text-align: left;
+}
+
+.service-features li::before {
+    content: "\f268"; /* bi-check-circle-fill */
+    font-family: "bootstrap-icons" !important;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: var(--brand-green-rich);
+    font-weight: 900;
+    font-size: 1.05rem;
+}
+
+.service-card.highlighted .service-features li::before {
+    color: var(--brand-gold);
+}
+
+/* Action Buttons */
+.btn-service {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+    transition: var(--transition-luxury);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-service-primary {
+    background: linear-gradient(135deg, var(--brand-green-deep) 0%, var(--brand-green-rich) 100%);
+    color: white !important;
+    box-shadow: 0 5px 15px rgba(4, 120, 87, 0.2);
+}
+
+.btn-service-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(4, 120, 87, 0.35);
+    background: linear-gradient(135deg, #035a40 0%, #15b780 100%);
+}
+
+.btn-service-highlight {
+    background: linear-gradient(135deg, var(--brand-gold) 0%, #f39c12 100%);
+    color: white !important;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.25);
+}
+
+.btn-service-highlight:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(212, 175, 55, 0.45);
+    background: linear-gradient(135deg, #b8860b 0%, #d68910 100%);
 }
 
 .pricing-box {

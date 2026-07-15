@@ -33,18 +33,16 @@ body {
 
 /* Technology Section */
 .technology {
-    /*background: linear-gradient(135deg, #2d5016 0%, #1a4c96 100%);*/
-    background: linear-gradient(180deg, #eef7f1 0%, #fafdfa 62%, #ffffff 100%);
-    color: white;
-    padding-top: calc(var(--header-height) + 20px); /* thêm khoảng cách 20px */
+    background: var(--bg-light-soft);
+    border-bottom: 1px solid rgba(4, 120, 87, 0.08);
+    padding-top: 80px;
     padding-bottom: 80px;
     padding-left: 2rem;
     padding-right: 2rem;
 }
 
 .technology h3 {
-    color: #0E2A5B;
-
+    color: var(--brand-dark-deep);
     font-weight: 700;
     margin-bottom: 15px;
 }
@@ -57,14 +55,11 @@ body {
     object-fit: cover;
     width: 100%;
     height: 220px;
-}
-/* Hover ảnh */
-.technology img {
-    transition: transform .3s ease, box-shadow .3s ease;
+    transition: var(--transition-luxury);
 }
 .technology img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+    transform: scale(1.03);
+    box-shadow: 0 12px 30px rgba(4, 120, 87, 0.15);
 }
 /* Tiêu đề hiệu ứng underline */
 .technology h3 {
@@ -79,8 +74,8 @@ body {
     height: 3px;
     bottom: -5px;
     left: 0;
-    background-color: #28a745;
-    transition: width .3s ease;
+    background-color: var(--brand-green-rich);
+    transition: var(--transition-luxury);
 }
 .technology h3:hover::after {
     width: 100%;

@@ -98,9 +98,41 @@
 
     const botReply = (userText) => {
         const audience = detectAudience(userText);
+        const t = normalize(userText);
+
+        // Client-side greeting fallback
+        if (t.includes("chao") || t.includes("hello") || t.includes("hi") || t.includes("alo")) {
+            return formatResponse(audience, "chào Anh/Chị! Em là trợ lý ảo TrangHerb EcoTech. Em có thể hỗ trợ cung cấp thông tin về các gói dịch vụ (Nuôi gà, Tưới rau, Aquaponics) và tài liệu cẩm nang kỹ thuật của dự án ạ.");
+        }
+
+        // Client-side simple search fallback over chatbotCore data
+        if (window.chatbotCore && Array.isArray(window.chatbotCore)) {
+            const queryWords = t.split(" ").filter(w => w.length >= 3);
+            let bestMatch = null;
+            let maxMatches = 0;
+
+            for (const item of window.chatbotCore) {
+                const itemNormalized = normalize(item.text);
+                let matchCount = 0;
+                for (const word of queryWords) {
+                    if (itemNormalized.includes(word)) {
+                        matchCount++;
+                    }
+                }
+                if (matchCount > maxMatches && matchCount >= 2) {
+                    maxMatches = matchCount;
+                    bestMatch = item.text;
+                }
+            }
+
+            if (bestMatch) {
+                return formatResponse(audience, bestMatch);
+            }
+        }
+
         return formatResponse(
             audience,
-            "hiện hệ thống đang bận hoặc chưa phản hồi. Anh/Chị vui lòng thử lại ngay giúp mình nhé."
+            "dữ liệu phản hồi tự động hiện chưa tìm thấy hoặc máy chủ đang quá tải. Anh/Chị có thể hỏi về các gói dịch vụ (Nuôi gà, Tưới rau, Aquaponics) hoặc liên hệ Hotline 0355 107 207 để hỗ trợ nhanh nhất nhé ạ."
         );
     };
 
