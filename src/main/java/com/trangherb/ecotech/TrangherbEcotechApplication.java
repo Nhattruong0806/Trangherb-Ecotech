@@ -1,4 +1,4 @@
-﻿package com.trangherb.ecotech;
+package com.trangherb.ecotech;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
